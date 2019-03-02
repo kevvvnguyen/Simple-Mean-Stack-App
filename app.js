@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mongoose = require('mongoose');
+var config = require('./config');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -23,6 +25,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+function _initializeModels(){
+  mongoose.connect(config.db);
+  mongoose.connection.on('error', function(err){
+    console.log("MongoDB failed to connect", {err: err});
+  })
+}
+
+_initializeModels();
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
